@@ -43,20 +43,31 @@ local function GenPerlinImage()
     imageData = love.graphics.newImage(noiseData)
 end
 
-local function DrawButton(position, size, colors, text, font)
+local function DrawButton(position, size, colors, text, font, thickness)
     local mousePos = {x = love.mouse.getX(), y = love.mouse.getY()}
     local isHover = mousePos.x > position.x - size.x / 2 and mousePos.x < position.x + size.x / 2 and
                     mousePos.y > position.y - size.y / 2 and mousePos.y < position.y + size.y / 2
     local clr = isHover and colors.hovor or colors.color
 
+    love.graphics.push()
     love.graphics.setFont(font)
     love.graphics.setColor(unpack(clr))
+
     love.graphics.rectangle("fill", position.x - size.x / 2,
         position.y - size.y / 2,
         size.x, size.y,
         10, 10)
+    
     love.graphics.setColor(0, 0, 0, 1)
     love.graphics.printf(text,position.x-size.x/2,position.y-size.y/2,size.x*0.97, "center")
+
+    love.graphics.setLineWidth(thickness or 5)
+    love.graphics.rectangle("line", position.x - size.x / 2,
+        position.y - size.y / 2,
+        size.x, size.y,
+        10, 10)
+    
+    love.graphics.pop()
 end
 
 local Buttons = {
@@ -65,21 +76,24 @@ local Buttons = {
         colors = {color = utills.colorUtills.RGBtoUnit(210, 210, 210), hovor = utills.colorUtills.RGBtoUnit(140, 140, 140)},
         next = "worlds", -- next scene when clicked
         position = {x = utills.scaleUtills.PercentX(0.5), y = utills.scaleUtills.PercentY(0.65)},
-        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)}
+        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)},
+        lineThickness = 2.7,
     },
     {
         text = "Quit",
         colors = {color = utills.colorUtills.RGBtoUnit(210, 210, 210), hovor = utills.colorUtills.RGBtoUnit(140, 140, 140)},
         next = "Exit", -- next scene when clicked
         position = {x = utills.scaleUtills.PercentX(0.5), y = utills.scaleUtills.PercentY(0.85)},
-        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)}
+        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)},
+        lineThickness = 2.7,
     },
     {
         text = "Options",
         colors = {color = utills.colorUtills.RGBtoUnit(210, 210, 210), hovor = utills.colorUtills.RGBtoUnit(140, 140, 140)},
         next = "options", -- next scene when clicked
         position = {x = utills.scaleUtills.PercentX(0.5), y = utills.scaleUtills.PercentY(0.75)},
-        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)}
+        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)},
+        lineThickness = 2.7,
     }
 }
 
@@ -100,7 +114,7 @@ function scene.update(dt)
         local isHover = mousePos.x > button.position.x - button.size.x / 2 and mousePos.x < button.position.x + button.size.x / 2 and
                         mousePos.y > button.position.y - button.size.y / 2 and mousePos.y < button.position.y + button.size.y / 2
 
-        if isHover and (love.mouse.isDown(1) or inputs.KeyPressed("return")) then
+        if isHover and (inputs.MousePressed(1) or inputs.KeyPressed("return")) then
             if button.next == "Exit" then
                 love.event.quit()
             else
@@ -112,12 +126,14 @@ function scene.update(dt)
 end
 
 function scene.draw()
+    love.graphics.setColor(1, 1, 1, 1) -- reset color
+
     love.graphics.draw(imageData, 0, 0)
 
     love.graphics.draw(titleImg, utills.scaleUtills.CenterX(titleImg:getWidth()), utills.scaleUtills.CenterY(titleImg:getHeight())-utills.scaleUtills.PercentY(0.2))
 
     for _, button in ipairs(Buttons) do
-        DrawButton(button.position, button.size, button.colors, button.text, buttonFont)
+        DrawButton(button.position, button.size, button.colors, button.text, buttonFont, button.lineThickness)
     end
 end
 
