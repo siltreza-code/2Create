@@ -49,5 +49,4 @@ end
 
 function love.draw()
     SceneM.draw()
-    VolumeManager.Draw()
 end
