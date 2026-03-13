@@ -3,7 +3,7 @@ m.colorUtills = {}
 m.scaleUtills = {}
 
 function m.colorUtills.RGBtoUnit(R, G, B, A)
-    return (R/255), (G/255), (B/255), (A or 255/255)
+    return {R/255, G/255, B/255, (A or 255)/255}
 end
 
 function m.colorUtills.HexToUnit(hex)
@@ -39,6 +39,16 @@ end
 function m.scaleUtills.Center(w, h)
     local sw, sh = love.graphics.getDimensions()
     return (sw - w)/2, (sh - h)/2
+end
+
+function m.scaleUtills.CenterX(w)
+    local sw = love.graphics.getWidth()
+    return (sw - w)/2
+end
+
+function m.scaleUtills.CenterY(h)
+    local sh = love.graphics.getHeight()
+    return (sh - h)/2
 end
 
 function m.scaleUtills.Anchor(w, h, anchorX, anchorY)
