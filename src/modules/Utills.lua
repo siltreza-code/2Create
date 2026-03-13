@@ -1,6 +1,7 @@
 local m = {}
 m.colorUtills = {}
 m.scaleUtills = {}
+m.mathUtills = {}
 
 function m.colorUtills.RGBtoUnit(R, G, B, A)
     return {R/255, G/255, B/255, (A or 255)/255}
@@ -70,6 +71,14 @@ end
 
 function m.scaleUtills.Smooth(current, target, speed, dt)
     return current + (target - current) * speed * dt
+end
+
+function m.mathUtills.Clamp(x, min, max)
+    return math.max(min, math.min(max, x))
+end
+
+function m.mathUtills.sin(amplitude, frequency)
+    return math.sin(love.timer.getTime() * frequency) * amplitude
 end
 
 return m

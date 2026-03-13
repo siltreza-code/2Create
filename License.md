@@ -5,6 +5,7 @@ https://love2d.org/
 
 Tiny5 Font — SIL Open Font License Version 1.1
 Jersey10 Font — SIL Open Font License Version 1.1
+json.lua Module - Custom license, check the licenses folder
 
 ---
 

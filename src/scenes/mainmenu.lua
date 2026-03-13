@@ -100,9 +100,13 @@ local Buttons = {
 function scene.load()
     love.math.setRandomSeed(os.time())
     GenPerlinImage()
+
+    love.window.setTitle("2Create - BETA")
 end
 
 function scene.update(dt)
+    screenSize = {x = utills.scaleUtills.PercentX(1), y = utills.scaleUtills.PercentY(1)} -- update screen size
+
     x = x + vx * dt
     y = y + vy * dt
     t = t + vt * dt
