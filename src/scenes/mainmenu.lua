@@ -73,26 +73,32 @@ end
 local Buttons = {
     {
         text = "Singleplayer",
-        colors = {color = utills.colorUtills.RGBtoUnit(210, 210, 210), hovor = utills.colorUtills.RGBtoUnit(140, 140, 140)},
-        next = "worlds", -- next scene when clicked
-        position = {x = utills.scaleUtills.PercentX(0.5), y = utills.scaleUtills.PercentY(0.65)},
-        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)},
-        lineThickness = 2.7,
-    },
-    {
-        text = "Quit",
-        colors = {color = utills.colorUtills.RGBtoUnit(210, 210, 210), hovor = utills.colorUtills.RGBtoUnit(140, 140, 140)},
-        next = "Exit", -- next scene when clicked
-        position = {x = utills.scaleUtills.PercentX(0.5), y = utills.scaleUtills.PercentY(0.85)},
-        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)},
+        colors = {color = utills.colorUtills.RGBtoUnit(210,210,210), hovor = utills.colorUtills.RGBtoUnit(140,140,140)},
+        next = "worlds",
+        px = 0.5,
+        py = 0.65,
+        sx = 0.3,
+        sy = 0.08,
         lineThickness = 2.7,
     },
     {
         text = "Options",
-        colors = {color = utills.colorUtills.RGBtoUnit(210, 210, 210), hovor = utills.colorUtills.RGBtoUnit(140, 140, 140)},
-        next = "options", -- next scene when clicked
-        position = {x = utills.scaleUtills.PercentX(0.5), y = utills.scaleUtills.PercentY(0.75)},
-        size = {x = utills.scaleUtills.PercentX(0.3), y = utills.scaleUtills.PercentY(0.08)},
+        colors = {color = utills.colorUtills.RGBtoUnit(210,210,210), hovor = utills.colorUtills.RGBtoUnit(140,140,140)},
+        next = "options",
+        px = 0.5,
+        py = 0.75,
+        sx = 0.3,
+        sy = 0.08,
+        lineThickness = 2.7,
+    },
+    {
+        text = "Quit",
+        colors = {color = utills.colorUtills.RGBtoUnit(210,210,210), hovor = utills.colorUtills.RGBtoUnit(140,140,140)},
+        next = "Exit",
+        px = 0.5,
+        py = 0.85,
+        sx = 0.3,
+        sy = 0.08,
         lineThickness = 2.7,
     }
 }
@@ -105,7 +111,11 @@ function scene.load()
 end
 
 function scene.update(dt)
-    screenSize = {x = utills.scaleUtills.PercentX(1), y = utills.scaleUtills.PercentY(1)} -- update screen size
+
+    screenSize = {
+        x = utills.scaleUtills.PercentX(1),
+        y = utills.scaleUtills.PercentY(1)
+    }
 
     x = x + vx * dt
     y = y + vy * dt
@@ -113,10 +123,19 @@ function scene.update(dt)
 
     GenPerlinImage()
 
+    local mouseX, mouseY = inputs.MousePosition()
+
     for _, button in ipairs(Buttons) do
-        local mousePos = {x = love.mouse.getX(), y = love.mouse.getY()}
-        local isHover = mousePos.x > button.position.x - button.size.x / 2 and mousePos.x < button.position.x + button.size.x / 2 and
-                        mousePos.y > button.position.y - button.size.y / 2 and mousePos.y < button.position.y + button.size.y / 2
+
+        local posX = utills.scaleUtills.PercentX(button.px)
+        local posY = utills.scaleUtills.PercentY(button.py)
+
+        local sizeX = utills.scaleUtills.PercentX(button.sx)
+        local sizeY = utills.scaleUtills.PercentY(button.sy)
+
+        local isHover =
+            mouseX > posX - sizeX/2 and mouseX < posX + sizeX/2 and
+            mouseY > posY - sizeY/2 and mouseY < posY + sizeY/2
 
         if isHover and (inputs.MousePressed(1) or inputs.KeyPressed("return")) then
             if button.next == "Exit" then
@@ -126,18 +145,39 @@ function scene.update(dt)
                 events.Fire("reloadScene")
             end
         end
+
     end
 end
 
 function scene.draw()
-    love.graphics.setColor(1, 1, 1, 1) -- reset color
 
-    love.graphics.draw(imageData, 0, 0)
+    love.graphics.setColor(1,1,1,1)
 
-    love.graphics.draw(titleImg, utills.scaleUtills.CenterX(titleImg:getWidth()), utills.scaleUtills.CenterY(titleImg:getHeight())-utills.scaleUtills.PercentY(0.2))
+    love.graphics.draw(imageData,0,0)
+
+    love.graphics.draw(
+        titleImg,
+        utills.scaleUtills.CenterX(titleImg:getWidth()),
+        utills.scaleUtills.CenterY(titleImg:getHeight()) - utills.scaleUtills.PercentY(0.2)
+    )
 
     for _, button in ipairs(Buttons) do
-        DrawButton(button.position, button.size, button.colors, button.text, buttonFont, button.lineThickness)
+
+        local posX = utills.scaleUtills.PercentX(button.px)
+        local posY = utills.scaleUtills.PercentY(button.py)
+
+        local sizeX = utills.scaleUtills.PercentX(button.sx)
+        local sizeY = utills.scaleUtills.PercentY(button.sy)
+
+        DrawButton(
+            {x = posX, y = posY},
+            {x = sizeX, y = sizeY},
+            button.colors,
+            button.text,
+            buttonFont,
+            button.lineThickness
+        )
+
     end
 end
 

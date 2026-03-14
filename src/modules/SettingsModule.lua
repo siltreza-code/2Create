@@ -1,53 +1,125 @@
-local utills = require("src.modules.Utills")
+local json = require("src.modules.json")
+local M = {}
 
-local screenCurrentSizeIndex = 3
 local screenSizes = {
-    {x = 400, y = 300},
-    {x = 640, y = 480},
-    {x = 800, y = 600},
-    {x = 1280, y = 720},
-    {x = 1920, y = 1080},
-    {x = 2560, y = 1440},
-    {x = 3840, y = 2160},
+    {400,300},
+    {640,480},
+    {800,600},
+    {1280,720},
+    {1920,1080},
+    {2560,1440},
+    {3840,2160},
 }
 
-local rawoptions = { -- these are defaults for now
-    screenSize = {800, 600},
+-- actual option values
+local values = {
+    screenSizeIndex = 3,
     mainVolume = 1,
     sfxVolume = 1,
     musicVolume = 1,
-    directionalAudio = false,
+    directionalAudio = false
 }
-local options = {
-    {name = "screen size: "..table.concat(rawoptions.screenSize, "x"), desc = "Size of the game window", type = "button", action = function()
-        screenCurrentSizeIndex = screenCurrentSizeIndex + 1
-        if screenCurrentSizeIndex > #screenSizes then screenCurrentSizeIndex = 1 end
-        local newSize = screenSizes[screenCurrentSizeIndex]
-        rawoptions.screenSize = newSize
-    end
+
+-- metadata for the settings scene
+local definitions = {
+    screenSize = {
+        name = "Screen Size",
+        desc = "Size of the game window",
+        type = "button",
+        get = function()
+            local s = screenSizes[values.screenSizeIndex]
+            return s[1].."x"..s[2]
+        end,
+        action = function()
+            values.screenSizeIndex = values.screenSizeIndex + 1
+            if values.screenSizeIndex > #screenSizes then
+                values.screenSizeIndex = 1
+            end
+        end
     },
-    {name = "main volume: "..math.floor(rawoptions.mainVolume * 100).."%", desc = "The main volume of the game", type = "slider", value = rawoptions.mainVolume,
-    action = function(value)
-        rawoptions.mainVolume = value
-    end
+
+    mainVolume = {
+        name = "Main Volume",
+        desc = "Master game volume",
+        type = "slider",
+        get = function()
+            return math.floor(values.mainVolume * 100).."%"
+        end,
+        action = function(v)
+            values.mainVolume = v
+        end
     },
-    {name = "sfx volume: "..math.floor(rawoptions.sfxVolume * 100).."%", desc = "The volume of sound effects", type = "slider", value = rawoptions.sfxVolume,
-    action = function(value)
-        rawoptions.sfxVolume = value
-    end
+
+    sfxVolume = {
+        name = "SFX Volume",
+        desc = "Sound effects volume",
+        type = "slider",
+        get = function()
+            return math.floor(values.sfxVolume * 100).."%"
+        end,
+        action = function(v)
+            values.sfxVolume = v
+        end
     },
-    {name = "music volume: "..math.floor(rawoptions.musicVolume * 100).."%", desc = "The volume of background music", type = "slider", value = rawoptions.musicVolume,
-    action = function(value)
-        rawoptions.musicVolume = value
-    end
+
+    musicVolume = {
+        name = "Music Volume",
+        desc = "Background music volume",
+        type = "slider",
+        get = function()
+            return math.floor(values.musicVolume * 100).."%"
+        end,
+        action = function(v)
+            values.musicVolume = v
+        end
     },
-    {name = "directional audio: "..tostring(rawoptions.directionalAudio), desc = "Whether to use directional audio", type = "toggle",value = rawoptions.directionalAudio,
-    action = function(value)
-        rawoptions.directionalAudio = value
-    end
+
+    directionalAudio = {
+        name = "Directional Audio",
+        desc = "Enable positional audio",
+        type = "toggle",
+        get = function()
+            return tostring(values.directionalAudio)
+        end,
+        action = function(v)
+            values.directionalAudio = v
+        end
     }
 }
 
-local m = {}
+-- expose data
+function M.GetValue(name)
+    return values[name]
+end
 
-return m
+function M.Set(name, input)
+    local def = definitions[name]
+    if def and def.action then
+        def.action(input)
+    end
+end
+
+function M.GetDefinitions()
+    return definitions
+end
+
+function M.GetValues()
+    return values
+end
+
+function M.SaveData()
+    local encrypted = json.encode(values)
+    love.filesystem.write("settings.dat", encrypted)
+end
+
+function M.LoadData()
+    local data = love.filesystem.read("settings.dat")
+    if data then
+        values = json.decode(data)
+
+        love.window.setMode(screenSizes[values.screenSizeIndex][1], screenSizes[values.screenSizeIndex][2], {fullscreen = false})
+        love.audio.setVolume(values.mainVolume)
+    end
+end
+
+return M

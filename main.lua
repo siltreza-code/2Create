@@ -2,9 +2,8 @@ local States = require("src.modules.States")
 local SceneM = require("src.modules.SceneManager")
 local Events = require("src.modules.Events")
 local Inputs = require("src.modules.Inputs")
-local SongLoader = require("src.modules.SongLoader")
 local Timer = require("src.modules.timer")
-local VolumeManager = require("src.modules.VolumeManager")
+local SettingModule = require("src.modules.SettingsModule")
 
 local kps = 0
 Inputs.OnKeyPressed(function(key)
@@ -26,12 +25,6 @@ function love.load()
     Events.Hook("reloadScene", function()
         if States.Exists("CurrentScene") then
             local nextScene = States.Get("CurrentScene")
-            -- extra safety: don't enter gameplay without a selected song
-            if nextScene == "gameplay" and not States.Exists("SelectedSong") then
-                print("[main] redirecting from gameplay to songview (no SelectedSong)")
-                States.Set("CurrentScene", "songview")
-                nextScene = "songview"
-            end
             SceneM.loadScene(nextScene)
         end
     end)
@@ -39,12 +32,13 @@ function love.load()
     States.New("CurrentScene", "mainmenu")
     Events.Fire("reloadScene")
 
-    States.New("Songs", SongLoader.loadAllSongs())
+    SettingModule.LoadData()
 end
 
 function love.update(DT)
     Timer.update(DT)
     SceneM.update(DT)
+    Inputs.Update()
 end
 
 function love.draw()
