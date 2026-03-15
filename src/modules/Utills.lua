@@ -97,12 +97,6 @@ function m.mathUtills.Sign(x)
     else return 0 end
 end
 
-function m.mathUtills.Sign(x)
-    if x > 0 then return 1
-    elseif x < 0 then return -1
-    else return 0 end
-end
-
 function m.mathUtills.Chance(percent)
     return love.math.random() < percent
 end

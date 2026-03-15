@@ -2,6 +2,7 @@ local Utills = require("src.modules.Utills")
 
 local cacheSFX = {} -- sfx caching
 local cacheMUSIC = {} -- music caching
+local activeSFX = {} -- active sfx tracking
 
 local SoundManager = {}
 SoundManager.SFX = {}
@@ -12,26 +13,28 @@ local SFXVolume = 1
 local MUSICVolume = 1
 
 function SoundManager.SFX.Load(fileName)
-    if love.filesystem.getInfo("src/audio/sfx/" .. fileName) then
-        if cacheSFX[fileName] then
-            return cacheSFX[fileName] ~= nil
-        else
-            local sfx = love.audio.newSource("src/audio/sfx/" .. fileName, "static")
-            cacheSFX[fileName] = sfx
-            return cacheSFX[fileName] ~= nil
-        end
+    if not love.filesystem.getInfo("src/audio/sfx/" .. fileName) then
+        return false
+    end
+    if cacheSFX[fileName] then
+        return true
+    else
+        local sfx = love.audio.newSource("src/audio/sfx/" .. fileName, "static")
+        cacheSFX[fileName] = sfx
+        return true
     end
 end
 
 function SoundManager.Music.Load(fileName)
-    if love.filesystem.getInfo("src/audio/music/" .. fileName) then
-        if cacheMUSIC[fileName] then
-            return cacheMUSIC[fileName] ~= nil
-        else
-            local music = love.audio.newSource("src/audio/music/" .. fileName, "stream")
-            cacheMUSIC[fileName] = music
-            return cacheMUSIC[fileName] ~= nil
-        end
+    if not love.filesystem.getInfo("src/audio/music/" .. fileName) then
+        return false
+    end
+    if cacheMUSIC[fileName] then
+        return true
+    else
+        local music = love.audio.newSource("src/audio/music/" .. fileName, "stream")
+        cacheMUSIC[fileName] = music
+        return true
     end
 end
 
@@ -41,6 +44,7 @@ function SoundManager.SFX.Play(fileName, Pitch)
         sfx:setVolume(SFXVolume*MAINVolume)
         sfx:setPitch(Pitch or 1)
         sfx:play()
+        table.insert(activeSFX, {source = sfx, fileName = fileName})
     end
 end
 
@@ -62,8 +66,17 @@ function SoundManager.Volume.ChangeMUSICVolume(newVolume)
 end
 
 function SoundManager.SFX.IsPlaying(fileName)
-    if cacheSFX[fileName] then
-        return cacheSFX[fileName]:isPlaying()
+    -- Remove stopped sources
+    for i = #activeSFX, 1, -1 do
+        if not activeSFX[i].source:isPlaying() then
+            table.remove(activeSFX, i)
+        end
+    end
+    -- Check if any remaining match fileName
+    for _, entry in ipairs(activeSFX) do
+        if entry.fileName == fileName then
+            return true
+        end
     end
     return false
 end
