@@ -155,4 +155,4 @@ function scene.draw()
     end
 end
 
-return scenereturn scene
+return scene
