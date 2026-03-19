@@ -26,7 +26,7 @@ function m.loadScene(name)
     if not success then
         m.scene = nil
         m.sceneRaw = nil
-        error("err loading module. name: " .. name .. " msg: " .. (result or ""), 2)
+        error("err loading module. name: " .. name .. " | msg: " .. (result or ""), 2)
     end
 
     m.scene = name
@@ -39,7 +39,7 @@ function m.loadScene(name)
         end)
 
         if not ok then
-            error("error running scene.load() for scene: " .. name .. " msg: " .. (err or ""), 2)
+            error("error running scene.load() for scene: " .. name .. " | msg: " .. (err or ""), 2)
         end
     end
 end

@@ -23,15 +23,24 @@ function m.Start()
             local universePath = folderPath .. "/universe.dat"
             local data = love.filesystem.read(universePath)
 
-            if data then
+            if data and data ~= nil then
                 local universeData = json.decode(data)
-                m.worlds[folder] = {
+                table.insert(m.worlds, {
                     name = universeData.name or folder,
-                    image = universeData.image
-                }
+                    folder = universeData.folder or folder,
+                    image = universeData.image,
+                    lastplayed = universeData.lastPlayed,
+                    playtime = universeData.playTime
+                })
             end
         end
     end
+end
+
+function m.SortWorlds()
+    table.sort(m.worlds, function(a, b)
+        return (a.name or a.folder or "") < (b.name or b.folder or "")
+    end)
 end
 
 local function GetUniqueWorldName(baseName)
@@ -72,7 +81,7 @@ function m.SaveWorld(Name, World, Player, Items, last_image, Play_time)
 
         -- Save metadata
         local universeData = json.encode({
-            name = newName,
+            name = Name,
             folder = newName,
             image = last_image and "image.png" or nil,
             lastPlayed = os.time(),

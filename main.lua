@@ -4,6 +4,7 @@ local Events = require("src.modules.Events")
 local Inputs = require("src.modules.Inputs")
 local Timer = require("src.modules.timer")
 local SettingModule = require("src.modules.SettingsModule")
+local worldM = require("src.modules.WorldManager")
 
 local kps = 0
 Inputs.OnKeyPressed(function(key)
@@ -33,6 +34,12 @@ function love.load()
     Events.Fire("reloadScene")
 
     SettingModule.LoadData()
+    local screenshot = love.graphics.captureScreenshot(function(imageData)
+        local encoded = imageData:encode("png")
+        local bytes = encoded:getString()
+
+        worldM.SaveWorld("Test", {}, {}, {}, bytes, 50)
+    end)
 end
 
 function love.update(DT)
