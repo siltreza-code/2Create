@@ -93,3 +93,11 @@ To the maximum extent permitted by law, the Developer is not liable for any dama
 ## Governing Law
 
 This Agreement shall be governed by the laws of the jurisdiction in which the Developer resides.
+
+---
+
+## Changes to This Agreement
+
+The Developer may update or modify this Agreement at any time.
+Changes will not alter the core principles of fair use, modding support, and user rights, but may clarify or expand terms as needed.
+Continued use of the Software constitutes acceptance of the updated Agreement.
