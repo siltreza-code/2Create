@@ -74,6 +74,7 @@ function scene.unload()
     end
 
     SettingsModule.SaveData()
+    SettingsModule.LoadData() -- update screen and stuff
 end
 
 function scene.update(DT)

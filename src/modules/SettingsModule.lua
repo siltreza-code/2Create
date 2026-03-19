@@ -47,6 +47,7 @@ local definitions = {
         end,
         action = function(v)
             values.mainVolume = v
+            love.audio.setVolume(v)
         end
     },
 
