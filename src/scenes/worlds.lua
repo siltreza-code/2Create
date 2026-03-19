@@ -75,7 +75,7 @@ end
 function scene.unload()
     WorldManager.worlds = {} -- also reset it when unloading
     if scrollConn then
-        scrollConn.Remove() -- clear scroll connection to not cuase problems
+        scrollConn.Remove() -- clear scroll connection to not cause problems
     end
 end
 
@@ -155,4 +155,4 @@ function scene.draw()
     end
 end
 
-return scene
+return scenereturn scene
