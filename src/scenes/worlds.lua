@@ -13,10 +13,7 @@ local screen = {
 
 local scrollLimit = 0
 local scrollAmount = 0
-local scrollConn = inputs.OnMouseWheel(function(_, y)
-    scrollAmount = scrollAmount + y * 25
-    scrollAmount = utills.mathUtills.Clamp(scrollAmount, 0, scrollLimit)
-end)
+local scrollConn
 
 local worldTitleFont = love.graphics.newFont("src/fonts/jersey10.ttf", screen.height*0.1 or 20)
 local worldInfoFont = love.graphics.newFont("src/fonts/jersey10.ttf", screen.height*0.06 or 12)
@@ -62,14 +59,26 @@ local Buttons = {
 }
 
 function scene.load()
-    WorldManager.worlds = {} -- reset worlds
-    WorldManager.Start() -- reload worlds
-    WorldManager.SortWorlds() -- sort the worlds
+    WorldManager.worlds = {}
+    WorldManager.Start()
+    WorldManager.SortWorlds()
 
-    worldTitleFont = love.graphics.newFont("src/fonts/jersey10.ttf", screen.height*0.1) -- load font
-    worldInfoFont = love.graphics.newFont("src/fonts/jersey10.ttf", screen.height*0.06) -- load font
+    worldTitleFont = love.graphics.newFont("src/fonts/jersey10.ttf", screen.height*0.1)
+    worldInfoFont = love.graphics.newFont("src/fonts/jersey10.ttf", screen.height*0.06)
 
-    scrollAmount = 0 -- reset scroll
+    scrollAmount = 0
+
+    if #WorldManager.worlds > 3 then
+        local len = #WorldManager.worlds - 3
+        scrollLimit = -(screen.height * 0.21) * len
+    else
+        scrollLimit = 0
+    end
+
+    scrollConn = inputs.OnMouseWheel(function(_, y)
+        scrollAmount = scrollAmount + y * 25
+        scrollAmount = utills.mathUtills.Clamp(scrollAmount, scrollLimit, 0)
+    end)
 end
 
 function scene.unload()
@@ -114,7 +123,8 @@ function scene.draw()
     if WorldManager.worlds ~= nil then
         for I, UniData in ipairs(WorldManager.worlds) do
             if UniData.name or UniData.folder then
-                local CurY = (I-0.8)*(screen.height*0.21) + scrollAmount + screen.height*0.15                love.graphics.setColor(0, 0, 0, 0.1)
+                local CurY = (I-1)*(screen.height*0.21) + scrollAmount + screen.height*0.15
+                love.graphics.setColor(0, 0, 0, 0.1)
                 love.graphics.rectangle("fill",screen.width*0.15,CurY,screen.width*0.7,screen.height*0.2)
                 love.graphics.setColor(1, 1, 1, 0.7)
                 love.graphics.rectangle("line",screen.width*0.15,CurY,screen.width*0.7,screen.height*0.2) -- draw outline

@@ -5,6 +5,7 @@ local Inputs = require("src.modules.Inputs")
 local Timer = require("src.modules.timer")
 local SettingModule = require("src.modules.SettingsModule")
 local worldM = require("src.modules.WorldManager")
+local Textures = require("src.modules.TextureManager")
 
 local kps = 0
 Inputs.OnKeyPressed(function(key)
@@ -40,6 +41,7 @@ function love.load()
 
         worldM.SaveWorld("Test", {}, {}, {}, bytes, 50)
     end)
+    Textures.LoadTextures()
 end
 
 function love.update(DT)
